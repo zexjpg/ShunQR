@@ -33,25 +33,15 @@
 
 ## 安装
 
-### 方式一：开发者加载（推荐先这样验证）
-
-1. 下载本仓库（或从 [Releases](https://github.com/zexjpg/ShunQR/releases) 下载打包好的 zip）。
+1. 下载本仓库，或从 [Releases](https://github.com/zexjpg/ShunQR/releases) 下载打包好的 `ShunQR-1.2.1.zip`。
 2. 打开浏览器扩展管理页：
    - Chrome：`chrome://extensions`
    - Edge：`edge://extensions`
 3. 右上角打开「**开发者模式**」。
-4. 点击「**加载已解压的扩展程序**」，选择本仓库根目录。
+4. 点击「**加载已解压的扩展程序**」，选择仓库根目录（或解压后的 zip 目录）。
 5. 点击工具栏里的顺手码图标 → 右侧打开侧边栏 → 点「截图扫码」即可使用。
 
 > 点图标没有弹窗是正常的：本扩展的界面就是右侧边栏，这是刻意设计。
-
-### 方式二：打包后上传商店
-
-```bash
-python tools/build-package.py
-```
-
-产物在 `dist/顺手码-<version>.zip`，可直接上传 Chrome Web Store / Edge Add-ons（上架流程见 `store/publish-checklist.md`）。
 
 ## 使用
 
@@ -81,7 +71,6 @@ python tools/build-package.py
 - 解码与生成**全部在本地完成**，扩展不发起任何网络请求、不上传任何内容、不统计使用情况（可用 DevTools 验证）。
 - 历史记录仅存于浏览器本地扩展存储，可一键清空。
 - 生成的二维码内容只存在于侧栏内存，不写历史、不落盘，关掉侧栏即消失。
-- 详细的隐私说明见 `store/privacy.html`，可直接托管为隐私政策页。
 
 ## 技术栈
 
@@ -101,35 +90,7 @@ python tools/build-package.py
 ├── content/scan.js        # 内容脚本：暗色遮罩 + 拖框选区
 ├── gen/                   # 生成面板的 UI/渲染/交互逻辑
 ├── vendor/                # 第三方解码/编码库（ZXing WASM、qrcode）
-├── icons/                 # 16/32/48/128 png
-├── tools/                 # 打包与素材脚本
-├── test/                  # 自检页面与脚本
-└── store/                 # 上架物料（见下，非运行所需）
-```
-
-## 仓库里的 `store/` 是什么
-
-`store/` 不是运行所需文件，而是**上架商店用的物料**：
-
-- `listing-zh.md` / `listing-en.md`：商店详情页中英文文案，可直接粘贴。
-- `permissions.md`：隐私页逐项权限理由（英文）。
-- `reviewer-notes.md`：给审核员的测试说明（英文）。
-- `privacy.html`：现成的隐私政策页，托管后填入商店表单。
-- `publish-checklist.md`：上架 Edge Add-ons 的待办清单。
-- `assets/`：logo 与推广图。
-
-打包脚本（`tools/build-package.py`）会自动排除 `store/`、`test/`、`tools/`，只产出运行时文件。
-
-## 开发
-
-```bash
-# 重新打包到 dist/
-python tools/build-package.py
-
-# 截图缩放/补边（上架截图需 1280x800 或 640x480）
-python tools/fit-screenshot.py 截图1.png
-
-# 自检页面：浏览器打开 test/self-test.html
+└── icons/                 # 16/32/48/128 png
 ```
 
 ## 许可证
