@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>顺手码 · 隐私政策 / Privacy Policy</title>
+<style>
+  :root{
+    --accent:#4169e1; --bg:#f2faff; --card:#fff; --line:#e4e4e4;
+    --text:#1f2937; --muted:#5f6470;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0; padding:40px 20px 64px;
+    background:var(--bg); color:var(--text);
+    font:15px/1.8 "Microsoft YaHei", system-ui, -apple-system, "Segoe UI", sans-serif;
+  }
+  .wrap{max-width:760px; margin:0 auto}
+  .card{
+    background:var(--card); border:1px solid var(--line); border-radius:14px;
+    padding:34px 38px 38px;
+  }
+  h1{font-size:23px; margin:0 0 6px; font-weight:600}
+  .sub{color:var(--muted); font-size:13px; margin-bottom:26px}
+  h2{
+    font-size:16px; margin:32px 0 8px; font-weight:600;
+    padding-left:11px; border-left:3px solid var(--accent);
+  }
+  h2:first-of-type{margin-top:18px}
+  p{margin:8px 0}
+  ul{margin:8px 0; padding-left:20px}
+  li{margin:4px 0}
+  .en{color:var(--muted); font-size:13.5px; line-height:1.75; margin-top:6px}
+  .lead{
+    background:#eef3ff; border:1px solid #dce5ff; border-radius:10px;
+    padding:14px 16px; margin:18px 0 6px; font-weight:500;
+  }
+  code{
+    font:13px/1.6 ui-monospace, Consolas, monospace;
+    background:#f3f5f9; border:1px solid #e6e9f0; border-radius:4px;
+    padding:1px 5px;
+  }
+  .todo{background:#fff3cd; border:1px dashed #e0b34b; padding:1px 6px; border-radius:4px}
+  footer{margin-top:26px; color:var(--muted); font-size:12.5px; text-align:center}
+  @media (max-width:560px){ .card{padding:24px 20px 28px} body{padding:24px 12px 40px} }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="card">
+    <h1>顺手码 · 隐私政策</h1>
+    <div class="sub">最后更新：2026 年 10 月 28 日 ｜ Last updated: October 28, 2026</div>
+
+    <div class="lead">
+      一句话：这个扩展不收集、不上传、不分享任何数据。所有识别都在你的电脑上完成。
+      <div class="en">In one sentence: this extension collects nothing, uploads nothing and shares nothing. All decoding happens on your own computer.</div>
+    </div>
+
+    <h2>一、我们不收集任何数据</h2>
+    <p>「顺手码」没有服务器，没有账号体系，也不包含任何统计、广告或埋点代码。扩展在运行时不会发起任何网络请求，因此不存在"数据被上传"的可能。你可以打开扩展的后台页面（Service Worker）用开发者工具自行验证。</p>
+    <p class="en">The extension has no backend, no user accounts, and contains no analytics, advertising or tracking code. It performs no network requests at runtime, so no data can be transmitted. You can verify this yourself with DevTools on the extension's service worker.</p>
+
+    <h2>二、扩展会接触到哪些信息，以及它们的去向</h2>
+    <p>为了完成"扫二维码"这一件事，扩展在运行时会在你的设备上临时处理下列信息，它们<b>不会离开你的电脑</b>：</p>
+    <ul>
+      <li><b>你框选的那块屏幕区域</b>：用于裁剪出图像并解码。裁剪后的图像只存在于内存中，解码完成即丢弃，不写入硬盘。</li>
+      <li><b>解码出来的文本</b>：显示在侧栏，并可写入本地的扫码历史。</li>
+      <li><b>来源页面的地址与标题</b>：仅用于在历史记录里标注"这个码是在哪个页面扫到的"，方便你回查。</li>
+      <li><b>生成二维码时你输入的内容</b>：只在本地用于计算二维码，输入与结果都留在侧栏页面的内存里，关闭侧栏即清除；不写入历史，也不写入任何存储。</li>
+    </ul>
+    <p class="en">To do its single job, the extension temporarily processes the following on your device only: the screen region you select (used to crop and decode; the cropped image lives in memory and is discarded immediately), the decoded text (shown in the panel and optionally saved to local history), the source page URL and title (used only to label where a code came from in your history), and — when you generate a code — the text you type, which is used only to compute the QR image in memory and is dropped as soon as the panel closes.</p>
+
+    <h2>三、本地存储</h2>
+    <p>扫码历史保存在浏览器的扩展本地存储（<code>chrome.storage.local</code>）中，只存在这台设备上，不参与任何云同步。你可以随时在侧栏里删除单条记录或一键清空；卸载扩展时，这些数据会被浏览器一并删除。</p>
+    <p>生成的二维码相反——它的内容不写入任何存储、不进历史，只存在于侧栏页面的内存中，关闭侧栏即消失。</p>
+    <p class="en">Scan history is stored in the browser's local extension storage (<code>chrome.storage.local</code>), on this device only, and is never synchronised. You can delete individual entries or clear everything from the panel at any time; uninstalling the extension removes this data as well. Generated QR codes are the exception in the other direction: their content is never written to storage, history or any other file — it exists only in the panel's memory until the panel is closed.</p>
+
+    <h2>四、权限说明</h2>
+    <ul>
+      <li><b>activeTab</b>：只有当你主动点击图标、按下快捷键或使用右键菜单时，才临时获得当前页面的访问权，用于显示框选界面并截取你选中的区域。</li>
+      <li><b>scripting</b>：向当前页面注入框选遮罩脚本。</li>
+      <li><b>storage</b>：保存本地的扫码历史。</li>
+      <li><b>offscreen</b>：在独立的扩展文档中运行 WebAssembly 解码器。</li>
+      <li><b>sidePanel</b>：显示扫码历史与设置界面。</li>
+      <li><b>contextMenus</b>：提供右键菜单入口。</li>
+      <li><b>可选的"访问所有网站"权限</b>：默认关闭，只有你在设置里主动点击"授权任意页面"才会申请，用途仅限两点——切换标签页后仍能直接扫码，以及读取页面上二维码图片的原图以提高识别率。随时可以在同一处取消。</li>
+    </ul>
+    <p class="en">activeTab: temporary access to the current tab, granted only when you click the icon, press the shortcut or use the context menu. scripting: injects the selection overlay. storage: keeps local history. offscreen: runs the WebAssembly decoder. sidePanel: hosts the UI. contextMenus: adds the right-click menu. The optional "access all sites" permission is off by default, requested only if you click "Authorize all pages", and used solely to keep scanning working after a tab switch and to read an image's original bytes; it can be revoked in the same place.</p>
+
+    <h2>五、我们不做的事</h2>
+    <p>不收集个人身份信息，不读取浏览历史，不记录你的输入，不注入广告，不向任何第三方出售或共享数据，不做用户画像。扩展不包含任何远程代码，所有脚本与解码模块都随安装包一同分发。</p>
+    <p class="en">We do not collect personally identifiable information, do not read your browsing history, do not log your input, do not inject ads, do not sell or share data with third parties, and do not profile users. The extension contains no remote code; all scripts and the decoder are bundled with the package.</p>
+
+    <h2>六、儿童隐私</h2>
+    <p>本扩展不面向儿童设计，也不会有意收集儿童的信息——事实上它不收集任何人的信息。</p>
+    <p class="en">This extension is not directed at children and does not knowingly collect information from anyone, as it collects no information at all.</p>
+
+    <h2>七、政策变更</h2>
+    <p>如果未来版本的功能变化导致本政策需要调整，会在本页面更新并修改上方的"最后更新"日期。涉及数据处理方式的重大变化，会在扩展的更新说明中明确告知。</p>
+    <p class="en">If future changes require an update to this policy, the page will be revised and the "last updated" date above will change. Material changes to data handling will be called out in the extension's release notes.</p>
+
+    <h2>八、联系方式</h2>
+    <p>对隐私有任何疑问，可以发邮件到：<span class="todo">请替换为你的邮箱</span>（发布前务必替换这一处）。</p>
+    <p class="en">For any privacy question, contact: <span class="todo">replace-with-your-email</span>.</p>
+  </div>
+  <footer>顺手码 · QR Snap</footer>
+</div>
+</body>
+</html>

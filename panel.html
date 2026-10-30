@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>顺手码</title>
+<style>
+  :root {
+    --accent: #4169e1;
+    --bg: #f2faff;
+    --line: #e4e4e4;
+    --text: #1f2937;
+    --muted: #5f6470;
+    --surface: #ffffff;
+    --soft: #eef2ff;
+    --soft-line: #c9d6f7;
+    --warn: #a35b18;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; }
+  body {
+    display: flex;
+    flex-direction: column;
+    font-family: "Microsoft YaHei", system-ui, -apple-system, "Segoe UI", sans-serif;
+    font-size: 13px;
+    color: var(--text);
+    background: var(--bg);
+  }
+  .view { display: flex; flex-direction: column; flex: 1; min-height: 0; }
+  .view[hidden] { display: none; }
+
+  .tabs {
+    flex: none;
+    display: flex;
+    gap: 6px;
+    padding: 8px 10px;
+    background: var(--surface);
+    border-bottom: 1px solid var(--line);
+  }
+  .tab {
+    flex: 1;
+    height: 30px;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: var(--bg);
+    color: var(--muted);
+    font-family: inherit;
+    font-size: 12.5px;
+    cursor: pointer;
+  }
+  .tab.on {
+    background: var(--soft);
+    border-color: var(--soft-line);
+    color: var(--accent);
+    font-weight: 500;
+  }
+  .tab:hover { border-color: var(--soft-line); }
+
+  header {
+    flex: none;
+    padding: 12px 14px 10px;
+    background: var(--surface);
+    border-bottom: 1px solid var(--line);
+  }
+  .title-row { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
+  h1 { font-size: 14px; font-weight: 500; margin: 0; }
+  .total { font-size: 12px; color: var(--muted); }
+  .spacer { flex: 1; }
+  .tools { display: flex; gap: 6px; flex-wrap: wrap; }
+  .search { flex: none; padding: 10px 14px; background: var(--surface); border-bottom: 1px solid var(--line); }
+  input[type="search"] {
+    width: 100%;
+    height: 30px;
+    padding: 0 10px;
+    border: 1px solid var(--line);
+    border-radius: 7px;
+    font-family: inherit;
+    font-size: 12.5px;
+    color: var(--text);
+    background: var(--bg);
+    outline: none;
+  }
+  input[type="search"]:focus { border-color: var(--accent); }
+  button {
+    height: 28px;
+    padding: 0 9px;
+    border: 1px solid var(--line);
+    border-radius: 7px;
+    background: var(--surface);
+    color: #374151;
+    font-family: inherit;
+    font-size: 12px;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+  button:hover { background: var(--bg); border-color: #c3d3f0; }
+  button.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+  button.primary:hover { background: #3557c4; border-color: #3557c4; }
+  button.danger:hover { color: #a32d2d; border-color: #f0b8b8; background: #fdf3f3; }
+  button.ghost { border-color: transparent; background: transparent; color: var(--muted); }
+  button.ghost:hover { background: var(--bg); border-color: var(--line); color: var(--text); }
+  button[disabled] { opacity: .55; cursor: default; }
+  button[disabled]:hover { background: var(--surface); border-color: var(--line); }
+
+  .scan-btn {
+    width: 100%;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 9px;
+    font-size: 13px;
+    font-weight: 500;
+    margin-bottom: 9px;
+  }
+  /* 缺 activeTab 时的就地授权提示 */
+  .grant-nudge {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: -3px 0 9px;
+    padding: 7px 9px;
+    border: 1px solid var(--soft-line);
+    border-radius: 8px;
+    background: var(--soft);
+  }
+  .grant-nudge[hidden] { display: none; }
+  .grant-nudge span {
+    flex: 1;
+    font-size: 11.5px;
+    line-height: 1.55;
+    color: var(--muted);
+  }
+  .grant-nudge button {
+    flex: none;
+    height: 26px;
+    padding: 0 10px;
+    border-radius: 7px;
+    font-size: 12px;
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #fff;
+  }
+  .grant-nudge button:hover { background: #3557c4; border-color: #3557c4; }
+
+  kbd {
+    font: 11px/1 ui-monospace, Consolas, monospace;
+    padding: 4px 6px;
+    border: 1px solid var(--line);
+    border-bottom-width: 2px;
+    border-radius: 5px;
+    background: var(--surface);
+    color: var(--text);
+    white-space: nowrap;
+  }
+  .scan-btn kbd {
+    background: rgba(255, 255, 255, .2);
+    border-color: rgba(255, 255, 255, .38);
+    border-bottom-color: rgba(255, 255, 255, .5);
+    color: #fff;
+  }
+  kbd[hidden] { display: none; }
+
+  .settings {
+    margin-bottom: 9px;
+    padding: 9px 10px 10px;
+    border: 1px solid var(--line);
+    border-radius: 9px;
+    background: var(--bg);
+  }
+  .settings[hidden] { display: none; }
+  .set-row { display: flex; align-items: center; gap: 8px; }
+  .set-row + .set-row { margin-top: 8px; }
+  .set-label { font-size: 12px; color: var(--muted); }
+  .set-state { font-size: 11px; color: var(--muted); }
+  .set-state.on { color: var(--accent); }
+  .set-hint { margin: 9px 0 0; font-size: 11px; line-height: 1.7; color: var(--muted); }
+
+  main { flex: 1; min-height: 0; overflow-y: auto; padding: 8px 10px 16px; }
+  .row {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 9px 11px;
+    margin-bottom: 8px;
+  }
+  .row-hd { display: flex; align-items: center; gap: 7px; margin-bottom: 6px; }
+  .badge {
+    font: 10.5px/1 ui-monospace, Consolas, monospace;
+    padding: 3px 5px;
+    border-radius: 4px;
+    background: var(--soft);
+    color: var(--accent);
+    border: 1px solid #dce4ff;
+    white-space: nowrap;
+  }
+  time { font-size: 11px; color: var(--muted); }
+  .dup { font-size: 11px; color: var(--accent); }
+  .row-text {
+    font: 12px/1.55 ui-monospace, Consolas, monospace;
+    word-break: break-all;
+    white-space: pre-wrap;
+    max-height: 96px;
+    overflow: hidden;
+  }
+  .row-src {
+    margin-top: 5px;
+    font-size: 11px;
+    color: var(--muted);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .row-src a {
+    color: var(--accent);
+    text-decoration: none;
+  }
+  .row-src a:hover { text-decoration: underline; }
+  .row-src .host { color: #9aa0ac; margin-left: 5px; }
+  .row-ft { display: flex; gap: 6px; margin-top: 7px; }
+  .row-ft button { height: 26px; font-size: 11.5px; padding: 0 8px; }
+  .empty { padding: 44px 24px; text-align: center; color: var(--muted); line-height: 2; }
+  .empty span { font-size: 12px; color: #9aa0ac; }
+  footer {
+    flex: none;
+    padding: 7px 14px;
+    font-size: 11px;
+    color: var(--muted);
+    background: var(--surface);
+    border-top: 1px solid var(--line);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  footer.warn { color: var(--warn); }
+
+  /* ---------- 生成页 ---------- */
+  .gen-scroll { flex: 1; min-height: 0; overflow-y: auto; padding: 10px 10px 14px; }
+  .gen-block {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 10px 11px;
+    margin-bottom: 8px;
+  }
+  .gen-label { font-size: 11.5px; color: var(--muted); margin-bottom: 7px; }
+  .chips { display: flex; gap: 6px; flex-wrap: wrap; }
+  .chip {
+    height: 26px;
+    padding: 0 11px;
+    border-radius: 13px;
+    font-size: 12px;
+    background: var(--bg);
+    color: var(--muted);
+  }
+  .chip.on {
+    background: var(--soft);
+    border-color: var(--soft-line);
+    color: var(--accent);
+    font-weight: 500;
+  }
+  .fields { display: grid; gap: 6px; }
+  .fields.grid2 { grid-template-columns: 1fr 1fr; }
+  .fields[hidden] { display: none; }
+  .fields input,
+  .fields textarea,
+  .fields select {
+    width: 100%;
+    min-height: 30px;
+    padding: 6px 9px;
+    border: 1px solid var(--line);
+    border-radius: 7px;
+    background: var(--bg);
+    color: var(--text);
+    font-family: inherit;
+    font-size: 12.5px;
+    outline: none;
+  }
+  .fields textarea { resize: vertical; line-height: 1.6; min-height: 76px; }
+  .fields input:focus,
+  .fields textarea:focus,
+  .fields select:focus { border-color: var(--accent); }
+  .inline-row { display: flex; align-items: center; gap: 8px; }
+  .inline-row select { flex: 1; }
+  .check { display: flex; align-items: center; gap: 5px; font-size: 12px; color: var(--muted); white-space: nowrap; }
+  .check input { width: auto; min-height: 0; padding: 0; margin: 0; }
+
+  .preview {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 176px;
+    padding: 14px;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    background: #fff;
+  }
+  #gen-canvas {
+    display: block;
+    width: auto;
+    height: auto;
+    max-width: 200px;
+    max-height: 200px;
+    image-rendering: pixelated;
+  }
+  #gen-canvas[hidden] { display: none; }
+  #gen-empty { font-size: 12px; color: #8b8f99; text-align: center; line-height: 1.8; }
+  #gen-empty[hidden] { display: none; }
+  .gen-meta {
+    margin-top: 7px;
+    text-align: center;
+    font-size: 11px;
+    color: var(--muted);
+    word-break: break-all;
+  }
+  .gen-hint { margin: 8px 0 0; font-size: 11px; line-height: 1.7; color: var(--muted); }
+  .gen-hint:empty { display: none; }
+  .gen-hint.warn { color: var(--warn); }
+
+  .style-box summary {
+    cursor: pointer;
+    font-size: 12.5px;
+    color: var(--text);
+    list-style: none;
+  }
+  .style-box summary::-webkit-details-marker { display: none; }
+  .style-box summary::after { content: '▾'; float: right; color: var(--muted); }
+  .style-box[open] summary::after { content: '▴'; }
+  .style-row { display: flex; align-items: center; gap: 7px; margin-top: 8px; }
+  .style-row .set-label { flex: none; width: 44px; }
+  .style-row select {
+    flex: 1;
+    height: 28px;
+    padding: 0 8px;
+    border: 1px solid var(--line);
+    border-radius: 7px;
+    background: var(--bg);
+    color: var(--text);
+    font-family: inherit;
+    font-size: 12px;
+    outline: none;
+  }
+  input[type="color"] {
+    width: 34px;
+    height: 26px;
+    padding: 2px;
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    background: var(--surface);
+    cursor: pointer;
+  }
+  .gen-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+  .gen-actions button { height: 32px; font-size: 12.5px; }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #141821;
+      --surface: #1b1f27;
+      --line: #2d333f;
+      --text: #e5e7eb;
+      --muted: #a5abba;
+      --soft: #1e2740;
+      --soft-line: #2c3a5e;
+      --warn: #e0a468;
+    }
+    button { background: #20252f; border-color: #333a47; color: #d7dbe3; }
+    button:hover { background: #28303c; }
+    .badge { background: var(--soft); border-color: var(--soft-line); color: #9fb6ff; }
+    .dup { color: #9fb6ff; }
+    input[type="search"],
+    .fields input,
+    .fields textarea,
+    .fields select,
+    .style-row select { background: #141821; border-color: #333a47; color: #e5e7eb; }
+    .row-src .host { color: #6f7686; }
+    input[type="color"] { background: #20252f; }
+    .tab { background: #20252f; border-color: #333a47; }
+    .tab.on { background: var(--soft); border-color: var(--soft-line); color: #9fb6ff; }
+    .chip { background: #20252f; }
+    .chip.on { background: var(--soft); border-color: var(--soft-line); color: #9fb6ff; }
+  }
+</style>
+</head>
+<body>
+  <nav class="tabs" role="tablist" aria-label="功能切换">
+    <button class="tab on" id="tab-scan" role="tab" aria-selected="true">扫码</button>
+    <button class="tab" id="tab-gen" role="tab" aria-selected="false">生成</button>
+  </nav>
+
+  <div class="view" id="view-scan" role="tabpanel">
+  <header>
+    <div class="title-row">
+      <h1>顺手码</h1>
+      <span class="total" id="total"></span>
+      <span class="spacer"></span>
+      <button id="settings-btn" class="ghost" aria-expanded="false">设置</button>
+    </div>
+
+    <button id="scan-now" class="primary scan-btn">
+      <span>截图扫码</span>
+      <kbd id="scan-key" hidden></kbd>
+    </button>
+
+    <div class="grant-nudge" id="grant-nudge" hidden>
+      <span>这个页面还没授权，浏览器会拦住截图。</span>
+      <button id="grant-now">授权后继续</button>
+    </div>
+
+    <section class="settings" id="settings" hidden>
+      <div class="set-row">
+        <span class="set-label">扫描快捷键</span>
+        <span class="spacer"></span>
+        <kbd id="sc-key">读取中…</kbd>
+      </div>
+      <div class="set-row">
+        <button id="edit-keys">修改快捷键</button>
+        <span class="spacer"></span>
+        <span class="set-state" id="grant-state">未授权</span>
+        <button id="grant-site">授权任意页面</button>
+      </div>
+      <p class="set-hint">快捷键默认不占用任何按键，需要时点「修改快捷键」到浏览器的快捷键页面里自己指定组合（例如 Alt+Shift+Q），回到这里会自动更新；不用了就在那里点删除。<br>「授权任意页面」是可选权限：不授权也能正常扫码，只是切换标签页后需要先点一次工具栏图标再扫。</p>
+    </section>
+
+    <div class="tools">
+      <button id="export-csv">导出 CSV</button>
+      <button id="export-tsv">导出 TSV</button>
+      <button id="export-json">JSON</button>
+      <button id="clear" class="danger">清空</button>
+    </div>
+  </header>
+  <div class="search">
+    <input type="search" id="q" placeholder="搜索内容或来源页面…" autocomplete="off">
+  </div>
+  <main id="list"></main>
+  <footer id="status">全部数据只存在本机，不上传。</footer>
+  </div>
+
+  <div class="view" id="view-gen" role="tabpanel" hidden>
+    <div class="gen-scroll">
+      <section class="gen-block">
+        <div class="gen-label">内容类型</div>
+        <div class="chips" id="gen-types">
+          <button class="chip on" data-type="text">文本</button>
+          <button class="chip" data-type="url">网址</button>
+          <button class="chip" data-type="vcard">名片</button>
+          <button class="chip" data-type="wifi">WiFi</button>
+        </div>
+        <div class="fields" id="gen-fields" style="margin-top:8px">
+          <div data-panel="text">
+            <textarea id="f-text" rows="4" placeholder="输入任意文字，也可以是长句、编号、备注…" spellcheck="false"></textarea>
+          </div>
+          <div data-panel="url" hidden>
+            <input id="f-url" type="text" placeholder="example.com 或 https://example.com/page" spellcheck="false" autocomplete="off">
+          </div>
+          <div class="fields grid2" data-panel="vcard" hidden>
+            <input id="f-vc-name" placeholder="姓名">
+            <input id="f-vc-org" placeholder="公司 / 部门">
+            <input id="f-vc-tel" placeholder="手机 / 电话">
+            <input id="f-vc-email" placeholder="邮箱">
+            <input id="f-vc-url" placeholder="网址">
+            <input id="f-vc-addr" placeholder="地址">
+          </div>
+          <div data-panel="wifi" hidden>
+            <input id="f-wf-ssid" placeholder="WiFi 名称（SSID）" spellcheck="false" autocomplete="off">
+            <input id="f-wf-pass" placeholder="密码（无密码可留空）" spellcheck="false" autocomplete="off" style="margin-top:6px">
+            <div class="inline-row" style="margin-top:6px">
+              <select id="f-wf-sec">
+                <option value="WPA">WPA / WPA2</option>
+                <option value="WEP">WEP</option>
+                <option value="nopass">无密码</option>
+              </select>
+              <label class="check"><input type="checkbox" id="f-wf-hidden"> 隐藏网络</label>
+            </div>
+          </div>
+        </div>
+        <p class="gen-hint" id="gen-hint"></p>
+      </section>
+
+      <section class="gen-block">
+        <div class="preview">
+          <canvas id="gen-canvas" width="0" height="0" hidden></canvas>
+          <div id="gen-empty">输入内容后自动生成</div>
+        </div>
+        <div class="gen-meta" id="gen-meta"></div>
+      </section>
+
+      <section class="gen-block">
+        <details class="style-box">
+          <summary>样式设置</summary>
+          <div class="style-row">
+            <span class="set-label">尺寸</span>
+            <select id="st-size">
+              <option value="256">256 px</option>
+              <option value="512" selected>512 px</option>
+              <option value="1024">1024 px</option>
+            </select>
+          </div>
+          <div class="style-row">
+            <span class="set-label">容错</span>
+            <select id="st-ecc">
+              <option value="L">L 低（约 7%）</option>
+              <option value="M" selected>M 中（约 15%）</option>
+              <option value="Q">Q 较高（约 25%）</option>
+              <option value="H">H 高（约 30%）</option>
+            </select>
+          </div>
+          <div class="style-row">
+            <span class="set-label">颜色</span>
+            <input type="color" id="st-fg" value="#111111" title="码点颜色">
+            <span class="set-label">码</span>
+            <input type="color" id="st-bg" value="#ffffff" title="背景颜色">
+            <span class="set-label">底</span>
+            <span class="spacer"></span>
+            <button id="st-reset" class="ghost">还原</button>
+          </div>
+        </details>
+      </section>
+
+      <div class="gen-actions">
+        <button class="primary" id="gen-png" disabled>下载 PNG</button>
+        <button id="gen-svg" disabled>下载 SVG</button>
+        <button id="gen-copy-img" disabled>复制图片</button>
+        <button id="gen-copy-text" disabled>复制内容</button>
+      </div>
+    </div>
+    <footer id="gen-status">生成内容只在本页内存，关闭面板即清除。</footer>
+  </div>
+
+  <script src="vendor/qrcode/qrcode.js"></script>
+  <script src="gen/render.js"></script>
+  <script src="gen/payload.js"></script>
+  <script src="gen/ui.js"></script>
+  <script src="panel.js"></script>
+</body>
+</html>

@@ -1,0 +1,5 @@
+{
+  "type": "module",
+  "private": true,
+  "//": "仅用于让 Node 以 ESM 方式加载 dist/es；浏览器扩展不使用本文件，打包脚本已排除。"
+}

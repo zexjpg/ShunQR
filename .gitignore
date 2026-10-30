@@ -1,0 +1,11 @@
+# 打包产物通过 GitHub Releases 发布，不进版本库
+dist/*.zip
+
+# WorkBuddy 项目内部数据（含本地备忘/记忆），不对外公开
+.workbuddy/
+
+# 系统与编辑器产生的杂项
+.DS_Store
+Thumbs.db
+*.log
+__pycache__/

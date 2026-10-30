@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>qr-snap 解码自检</title>
+<style>
+  body { font: 14px/1.6 system-ui, "Microsoft YaHei", sans-serif; padding: 24px; color: #1f2937; }
+  h1 { font-size: 16px; margin: 0 0 16px; }
+  #out { font-size: 28px; font-weight: 600; margin: 16px 0 8px; }
+  .ok { color: #1D9E75; }
+  .bad { color: #E24B4A; }
+  pre { background: #f6f8fb; border: 1px solid #e4e6eb; border-radius: 8px; padding: 12px; overflow: auto; max-height: 380px; font-size: 12px; }
+  img { border: 1px solid #e4e6eb; border-radius: 8px; }
+  .expect { color: #5f6470; }
+</style>
+</head>
+<body>
+<h1>ZXing-WASM 解码自检</h1>
+<img id="src" src="sample.png" width="160" height="160" alt="sample">
+<div id="out">running…</div>
+<div class="expect">预期结果：https://example.com/hello</div>
+<pre id="log"></pre>
+
+<script type="module">
+import { readBarcodes, prepareZXingModule } from '../vendor/zxing/dist/es/reader/index.js';
+
+const out = document.getElementById('out');
+const log = document.getElementById('log');
+
+prepareZXingModule({
+  overrides: {
+    locateFile: (path, prefix) => {
+      if (typeof path === 'string' && path.endsWith('.wasm')) {
+        return new URL('../vendor/zxing/dist/reader/zxing_reader.wasm', import.meta.url).href;
+      }
+      return prefix ? prefix + path : path;
+    }
+  },
+  fireImmediately: true
+});
+
+(async () => {
+  try {
+    const img = document.getElementById('src');
+    await img.decode();
+
+    const canvas = document.createElement('canvas');
+    canvas.width = img.naturalWidth;
+    canvas.height = img.naturalHeight;
+    const ctx = canvas.getContext('2d', { willReadFrequently: true });
+    ctx.drawImage(img, 0, 0);
+    const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+
+    const t0 = performance.now();
+    const hits = await readBarcodes(imageData, {
+      tryHarder: true,
+      tryRotate: true,
+      maxNumberOfSymbols: 8,
+      binarizer: 'LocalAverage'
+    });
+    const cost = Math.round(performance.now() - t0);
+
+    log.textContent = `decode ${cost}ms\n` + JSON.stringify(hits, null, 2);
+
+    const pass = hits.length === 1 && hits[0].text === 'https://example.com/hello';
+    out.textContent = pass ? 'PASS' : 'FAIL';
+    out.className = pass ? 'ok' : 'bad';
+    document.title = pass ? 'PASS' : 'FAIL';
+  } catch (err) {
+    out.textContent = 'ERROR: ' + (err && err.message);
+    out.className = 'bad';
+    log.textContent = (err && err.stack) || String(err);
+    document.title = 'ERROR';
+  }
+})();
+</script>
+</body>
+</html>
